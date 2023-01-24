@@ -1,7 +1,6 @@
 import Head from "next/head";
 import { Chat } from "../components/chat/chat";
-
-// Import the functions you need from the SDKs you need
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -24,30 +23,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+var loggedIn: boolean = false;
 
 const provider = new GoogleAuthProvider()
 function SignIn() {
   const auth = getAuth();
   const handleClick = () => {
     signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // ...
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-    });
   }
 
   return (
@@ -56,9 +38,6 @@ function SignIn() {
     </div>
   );
 }
-
-// chack if the user is logged in
-var user: boolean = false;
 
 export default function Home() {
   return (
@@ -70,7 +49,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <section>{user ? <Chat /> : <SignIn />}</section>
+        <section>{loggedIn ? <Chat /> : <SignIn />}</section>
       </main>
     </>
   );
