@@ -1,4 +1,64 @@
-import Head from 'next/head'
+import Head from "next/head";
+import { Chat } from "../components/chat/chat";
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD37qlyAef_2lwMrw29QSy4pybUUCCKcto",
+  authDomain: "chat-app-a7ade.firebaseapp.com",
+  projectId: "chat-app-a7ade",
+  storageBucket: "chat-app-a7ade.appspot.com",
+  messagingSenderId: "219994442628",
+  appId: "1:219994442628:web:a23c8b71330df3f0fbebd1",
+  measurementId: "G-8NT4LSEY1E"
+
+};
+
+// Initialize Firebase
+
+const app = initializeApp(firebaseConfig);
+
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+const provider = new GoogleAuthProvider()
+function SignIn() {
+  const auth = getAuth();
+  const handleClick = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // ...
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+    });
+  }
+
+  return (
+    <div>
+      <button onClick={handleClick}>Sign in</button>
+    </div>
+  );
+}
+
+// chack if the user is logged in
+var user: boolean = false;
 
 export default function Home() {
   return (
@@ -10,10 +70,8 @@ export default function Home() {
       </Head>
 
       <main>
-        <section>
-          <h1>Hello World!</h1>
-        </section>
+        <section>{user ? <Chat /> : <SignIn />}</section>
       </main>
     </>
-  )
+  );
 }
