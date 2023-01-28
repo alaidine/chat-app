@@ -1,12 +1,9 @@
 import Head from "next/head";
 import { Chat } from "../components/chat/chat";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { initializeApp } from "firebase/app";
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { useAuthState } from "react-firebase-hooks/auth";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD37qlyAef_2lwMrw29QSy4pybUUCCKcto",
@@ -19,13 +16,11 @@ const firebaseConfig = {
 
 };
 
-// Initialize Firebase
-
-const app = initializeApp(firebaseConfig);
-
-var loggedIn: boolean = false;
-
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const [loggedIn] = useAuthState(auth as any);
 const provider = new GoogleAuthProvider()
+
 function SignIn() {
   const auth = getAuth();
   const handleClick = () => {
