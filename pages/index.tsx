@@ -4,6 +4,8 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
+import { setConstantValue } from "typescript";
+import { useState } from "react";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD37qlyAef_2lwMrw29QSy4pybUUCCKcto",
@@ -17,8 +19,20 @@ const firebaseConfig = {
 };
 
 const app = firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const [loggedIn] = useAuthState(auth as any);
+let currentUser: firebase.User | null = null;
+
+firebase.auth().onAuthStateChanged((user) => {
+  currentUser = user;
+})
+
+let loggedIn: boolean = false;
+
+if (currentUser) {
+  loggedIn = true
+} else {
+  loggedIn = false
+}
+
 const provider = new GoogleAuthProvider()
 
 function SignIn() {
