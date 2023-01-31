@@ -1,10 +1,7 @@
 import Head from "next/head";
-import { Chat } from "../components/chat/chat";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { setConstantValue } from "typescript";
 import { useState } from "react";
 
 const firebaseConfig = {
@@ -17,38 +14,46 @@ const firebaseConfig = {
   measurementId: "G-8NT4LSEY1E"
 
 };
-
 const app = firebase.initializeApp(firebaseConfig);
-let currentUser: firebase.User | null = null;
-
-firebase.auth().onAuthStateChanged((user) => {
-  currentUser = user;
-})
-
-let loggedIn: boolean = false;
-
-if (currentUser) {
-  loggedIn = true
-} else {
-  loggedIn = false
-}
-
 const provider = new GoogleAuthProvider()
 
-function SignIn() {
-  const auth = getAuth();
-  const handleClick = () => {
-    signInWithPopup(auth, provider)
+export default function Home() {
+  var [userStatus, setUserStatus] = useState(false);  
+
+  function SignOut() {
+    return firebase.auth().currentUser && (
+      <button onClick={() => firebase.auth().signOut().then(() => {setUserStatus(userStatus = false)})}>Sign Out</button>
+    )
   }
 
-  return (
-    <div>
-      <button onClick={handleClick}>Sign in</button>
-    </div>
-  );
-}
+  function SignIn() {
+    const auth = getAuth();
+    const handleClick = () => {
+      signInWithPopup(auth, provider)
+        .then(() => {
+          setUserStatus(userStatus = true)
+          console.log("logged in")
+          console.log(userStatus)
+        })
+      
+    }
 
-export default function Home() {
+    return (
+      <div>
+        <button onClick={handleClick}>Sign in</button>
+      </div>
+    )
+  }
+
+  function Chat() {
+    return (
+      <div>
+        <SignOut />
+        <h1>Chat</h1>
+      </div>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -58,7 +63,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <section>{loggedIn ? <Chat /> : <SignIn />}</section>
+        <section>{userStatus ? <Chat /> : <SignIn />}</section>
       </main>
     </>
   );
