@@ -4,7 +4,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { useState } from "react";
 
-const firebaseConfig = {
+firebase.initializeApp({
   apiKey: "AIzaSyD37qlyAef_2lwMrw29QSy4pybUUCCKcto",
   authDomain: "chat-app-a7ade.firebaseapp.com",
   projectId: "chat-app-a7ade",
@@ -13,9 +13,7 @@ const firebaseConfig = {
   appId: "1:219994442628:web:a23c8b71330df3f0fbebd1",
   measurementId: "G-8NT4LSEY1E"
 
-};
-const app = firebase.initializeApp(firebaseConfig);
-const provider = new GoogleAuthProvider()
+});
 
 export default function Home() {
   var [userStatus, setUserStatus] = useState(false);  
@@ -26,6 +24,7 @@ export default function Home() {
     )
   }
 
+  const provider = new GoogleAuthProvider()
   function SignIn() {
     const auth = getAuth();
     const handleClick = () => {
@@ -50,6 +49,9 @@ export default function Home() {
       <div>
         <SignOut />
         <h1>Chat</h1>
+        <div>
+          <input></input><button>send</button>
+        </div>
       </div>
     );
   }
