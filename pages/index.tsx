@@ -44,13 +44,17 @@ export default function Home() {
     )
   }
 
+  function sendMessage() {
+    // send a message to the database
+  }
+
   function Chat() {
     return (
       <div>
         <SignOut />
         <h1>Chat</h1>
         <div>
-          <input></input><button>send</button>
+          <input/><button onClick={sendMessage}>send</button>
         </div>
       </div>
     );
