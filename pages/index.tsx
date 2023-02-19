@@ -2,7 +2,9 @@ import Head from "next/head";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
+import "firebase/compat/firestore";
 import { useState } from "react";
+import { useCollectionData } from 'react-firebase-hooks/firestore'
 
 firebase.initializeApp({
   apiKey: "AIzaSyD37qlyAef_2lwMrw29QSy4pybUUCCKcto",
@@ -12,7 +14,6 @@ firebase.initializeApp({
   messagingSenderId: "219994442628",
   appId: "1:219994442628:web:a23c8b71330df3f0fbebd1",
   measurementId: "G-8NT4LSEY1E"
-
 });
 
 export default function Home() {
@@ -34,7 +35,6 @@ export default function Home() {
           console.log("logged in")
           console.log(userStatus)
         })
-      
     }
 
     return (
@@ -44,11 +44,15 @@ export default function Home() {
     )
   }
 
-  function sendMessage() {
+  function sendMessage(): void {
     // send a message to the database
   }
 
   function Chat() {
+    const messageRef = firestore.collection('messages');
+    const query = messageRef.orderBy('createdAt').limit(25);
+
+    const [messages] = useCollectionData(query, {idField: 'id'})
     return (
       <div>
         <SignOut />
