@@ -1,10 +1,10 @@
-import Head from "next/head";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
-import "firebase/compat/firestore";
 import { useState } from "react";
-import { useCollectionData } from 'react-firebase-hooks/firestore'
+import { useCollectionData } from "react-firebase-hooks/firestore"
+import Head from "next/head";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import "firebase/compat/auth";
 
 firebase.initializeApp({
   apiKey: "AIzaSyD37qlyAef_2lwMrw29QSy4pybUUCCKcto",
@@ -44,22 +44,46 @@ export default function Home() {
     )
   }
 
-  function sendMessage(): void {
-    // send a message to the database
+  function ChatMessage(props: any) {
+    const text = props.message;
+
+    return <p>{text}</p>
   }
 
   function Chat() {
-    const messageRef = firestore.collection('messages');
-    const query = messageRef.orderBy('createdAt').limit(25);
+    const auth = firebase.auth()
+    const [formValue, setFormValue] = useState('')
 
-    const [messages] = useCollectionData(query, {idField: 'id'})
+    // an array of object that stores the messages sent to the database
+    const messagesRef = firebase.firestore().collection("messages")
+    const query = messagesRef.orderBy('createdAt').limit(25)
+
+    const [messages] = useCollectionData(query as any) 
+
+    async function sendMessage(e: any) {
+      e.preventDefault();
+
+      // add a document to the messages collection
+      await messagesRef.add({
+        text: formValue,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      setFormValue('');
+    }
+
     return (
       <div>
-        <SignOut />
-        <h1>Chat</h1>
         <div>
-          <input/><button onClick={sendMessage}>send</button>
+          {messages && messages.map(msg => <ChatMessage /* key={msg.id} */ message={msg} />)}
         </div>
+
+        <form onSubmit={sendMessage}>
+          <input value={formValue} onChange={(e) => setFormValue(e.target.value)}/>
+          <button type="submit">send</button>
+        </form>
+
+        <SignOut />
       </div>
     );
   }
