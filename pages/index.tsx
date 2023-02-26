@@ -1,6 +1,6 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useState } from "react";
-import { useCollectionData } from "react-firebase-hooks/firestore"
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import Head from "next/head";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
@@ -13,54 +13,69 @@ firebase.initializeApp({
   storageBucket: "chat-app-a7ade.appspot.com",
   messagingSenderId: "219994442628",
   appId: "1:219994442628:web:a23c8b71330df3f0fbebd1",
-  measurementId: "G-8NT4LSEY1E"
+  measurementId: "G-8NT4LSEY1E",
 });
 
 export default function Home() {
-  var [userStatus, setUserStatus] = useState(false);  
+  var [userStatus, setUserStatus] = useState(false);
 
   function SignOut() {
-    return firebase.auth().currentUser && (
-      <button onClick={() => firebase.auth().signOut().then(() => {setUserStatus(userStatus = false)})}>Sign Out</button>
-    )
+    return (
+      firebase.auth().currentUser && (
+        <button
+          onClick={() =>
+            firebase
+              .auth()
+              .signOut()
+              .then(() => {
+                setUserStatus((userStatus = false));
+              })
+          }
+        >
+          Sign Out
+        </button>
+      )
+    );
   }
 
-  const provider = new GoogleAuthProvider()
+  const provider = new GoogleAuthProvider();
   function SignIn() {
     const auth = getAuth();
     const handleClick = () => {
-      signInWithPopup(auth, provider)
-        .then(() => {
-          setUserStatus(userStatus = true)
-          console.log("logged in")
-          console.log(userStatus)
-        })
-    }
+      signInWithPopup(auth, provider).then(() => {
+        setUserStatus((userStatus = true));
+        console.log("logged in");
+        console.log(userStatus);
+      });
+    };
 
     return (
       <div>
         <button onClick={handleClick}>Sign in</button>
       </div>
-    )
+    );
   }
 
   function ChatMessage(props: any) {
     const text = props.message;
 
-    return <p>{text}</p>
+    return <p>{text}</p>;
   }
 
   function Chat() {
-    const auth = firebase.auth()
-    const [formValue, setFormValue] = useState('')
+    const auth = firebase.auth();
+    const [formValue, setFormValue] = useState("");
 
     // an array of object that stores the messages sent to the database
-    const messagesRef = firebase.firestore().collection("messages")
-    const query = messagesRef.orderBy('createdAt').limit(25)
+    const messagesRef = firebase.firestore().collection("messages");
+    const query = messagesRef.orderBy("createdAt").limit(25);
 
-    const [messages] = useCollectionData(query as any) 
+    const [messages] = useCollectionData(
+      query as any,
+      { idField: "id" } as any
+    );
 
-    async function sendMessage(e: any) {
+    async function sendMessage(e: any): Promise<void> {
       e.preventDefault();
 
       // add a document to the messages collection
@@ -69,17 +84,23 @@ export default function Home() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      setFormValue('');
+      setFormValue("");
     }
 
     return (
       <div>
         <div>
-          {messages && messages.map(msg => <ChatMessage /* key={msg.id} */ message={msg} />)}
+          {messages &&
+            messages.map((msg) => (
+              <ChatMessage /* key={msg.id} */ message={msg.text} />
+            ))}
         </div>
 
         <form onSubmit={sendMessage}>
-          <input value={formValue} onChange={(e) => setFormValue(e.target.value)}/>
+          <input
+            value={formValue}
+            onChange={(e) => setFormValue(e.target.value)}
+          />
           <button type="submit">send</button>
         </form>
 
