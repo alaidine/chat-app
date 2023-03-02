@@ -1,6 +1,16 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Typography,
+  Container,
+  Button,
+  Input,
+} from "@mui/material";
+import GoogleButton from "react-google-button";
 import Head from "next/head";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
@@ -22,7 +32,8 @@ export default function Home() {
   function SignOut() {
     return (
       firebase.auth().currentUser && (
-        <button
+        <Button
+          sx={{ color: "black", background: "white" }}
           onClick={() =>
             firebase
               .auth()
@@ -33,7 +44,7 @@ export default function Home() {
           }
         >
           Sign Out
-        </button>
+        </Button>
       )
     );
   }
@@ -51,19 +62,19 @@ export default function Home() {
 
     return (
       <div>
-        <button onClick={handleClick}>Sign in</button>
+        <GoogleButton onClick={handleClick} />
       </div>
     );
   }
 
   function ChatMessage(props: any) {
-    const text = props.message;
+    const text = props.message.text;
 
-    return <p>{text}</p>;
+    return <Typography>{text}</Typography>;
   }
 
   function Chat() {
-    const auth = firebase.auth();
+    // const auth = firebase.auth();
     const [formValue, setFormValue] = useState("");
 
     // an array of object that stores the messages sent to the database
@@ -84,28 +95,39 @@ export default function Home() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
+      // clear the input field
       setFormValue("");
     }
 
     return (
-      <div>
-        <div>
-          {messages &&
-            messages.map((msg) => (
-              <ChatMessage /* key={msg.id} */ message={msg.text} />
-            ))}
-        </div>
+      <Box width="300px" height="100%" p={1} position="relative">
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar>
+            <Toolbar>
+              <SignOut />
+            </Toolbar>
+          </AppBar>
+        </Box>
 
-        <form onSubmit={sendMessage}>
-          <input
-            value={formValue}
-            onChange={(e) => setFormValue(e.target.value)}
-          />
-          <button type="submit">send</button>
-        </form>
+        <Box mt={3} position="absolute" bottom="Opx">
+          <div>
+            {messages &&
+              messages.map((msg) => (
+                <ChatMessage /* key={msg.id} */ message={msg} />
+              ))}
+          </div>
 
-        <SignOut />
-      </div>
+          <form onSubmit={sendMessage}>
+            <Input
+              value={formValue}
+              onChange={(e) => setFormValue(e.target.value)}
+            />
+            <Button type="submit" sx={{ color: "black" }}>
+              send
+            </Button>
+          </form>
+        </Box>
+      </Box>
     );
   }
 
@@ -117,9 +139,16 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main>
-        <section>{userStatus ? <Chat /> : <SignIn />}</section>
-      </main>
+      <Container>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="100vh"
+        >
+          <section>{userStatus ? <Chat /> : <SignIn />}</section>
+        </Box>
+      </Container>
     </>
   );
 }
