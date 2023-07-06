@@ -3,8 +3,10 @@ const app = express()
 const port = 3000
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 require('dotenv/config')
 
+app.use(cors())
 app.use(bodyParser.json())
 
 const messagesRoute = require('./routes/messages')
