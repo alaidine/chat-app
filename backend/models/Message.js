@@ -7,7 +7,7 @@ const MessageSchema = mongoose.Schema({
   },
   user: {
     type: String,
-    default: "guestUser",
+    required: true,
   },
   date: {
     type: Date,

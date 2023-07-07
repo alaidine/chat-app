@@ -14,6 +14,7 @@ router.get('/get_messages', async (req, res) => {
 router.post('/post_message', async (req,res) => {
   const message = new Message({
     value: req.body.value,
+    user: req.body.user
   })
 
   try {

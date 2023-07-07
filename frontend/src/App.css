@@ -1,4 +1,4 @@
-button {
+.button {
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
@@ -8,7 +8,7 @@ button {
     font-size: 16px;
 }
 
-button:hover {
+.button:hover {
     background-color: #245a26;
 }
 
@@ -21,6 +21,16 @@ input {
     outline: none;
     border: none;
     padding: 0 10px;
+}
+
+.container {
+  display: grid;
+  grid-template-rows: 100%;
+}
+
+.chat-room {
+  display: grid;
+  grid-template-rows: 92% 8%;
 }
 
 .messages {
@@ -58,9 +68,8 @@ header {
     position: absolute;
     height: 100%;
     display: grid;
-    grid-template-rows: 5% 90% 5%;
+    grid-template-rows: 5% 95%;
 }
-
 
 main::-webkit-scrollbar {
     width: 0.25rem;

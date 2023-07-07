@@ -1,19 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { auth } from "../utils/firebase"
+import { useAuthState } from "react-firebase-hooks/auth"
 import './App.css'
 import axios from 'axios'
+import GoogleButton from 'react-google-button'
 
 
 function SignOut() {
   return (
-    <button className='sign-out'>Sign Out</button>
-  )
-}
-
-function SignIn() {
-  return (
-    <>
-      <p>not logged in</p>
-    </>
+    <button onClick={() => auth.signOut()} className='sign-out button'>Sign Out</button>
   )
 }
 
@@ -25,14 +21,15 @@ function ChatMessage(props: any) {
   )
 }
 
-function ChatRoom() {
+function ChatRoom(props: any) {
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState([])
   const dummy = useRef()
+  const user = props.user.displayName
 
   async function sendMessage(e: any) {
     e.preventDefault()
-    await axios.post('http://localhost:3000/messages/post_message', { value: message })
+    await axios.post('http://localhost:3000/messages/post_message', { value: message, user: user })
     .then((response) => {
       console.log(response.data)
       console.log('new message')
@@ -63,12 +60,7 @@ function ChatRoom() {
   }, [messages.length])
 
   return (
-    <div className='App'>
-      <header>
-        <SignOut />
-      </header>
-      
-
+    <div className='chat-room'>
       <main className='messages'>
         <div className='text-messages'>
           {messages}
@@ -79,19 +71,42 @@ function ChatRoom() {
 
       <form className='input'>
         <input className='input-field' type="sumbit" value={message} onChange={(e) => setMessage(e.target.value)} placeholder='send a message' />
-        <button className='input-button' onClick={sendMessage}>send</button>
+        <button className='input-button button' onClick={sendMessage}>send</button>
       </form >
     </div>
   )
 }
 
 function App() {
-  let user = true
+  const [user, loading] = useAuthState(auth)
+
+  function SignIn() {
+    const googleProvider = new GoogleAuthProvider()
+    const GoogleLogin = async () => {
+      try {
+        const result = await signInWithPopup(auth, googleProvider)
+        console.log(result.user)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    return (
+      <>
+        <GoogleButton onClick={GoogleLogin} />
+      </>
+    )
+  }
 
   return (
-    <>
-      {user ? <ChatRoom /> : <SignIn />}
-    </>
+    <div className='App'>
+      <header>
+        {user ? <SignOut /> : <></>}
+      </header>
+
+      <div className="container">
+        {user ? <ChatRoom user={user} /> : <SignIn />}
+      </div>
+    </div>
   )
 }
 
